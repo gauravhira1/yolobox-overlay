@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
-  <title>Ticker Overlay (Scrolling Text)</title>
+  <title>Ticker Overlay (Auto Speed)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{
       --ticker-bottom: 72px;
-      --ticker-size: 22px;
-      --ticker-speed: 46.7s;
+      --ticker-size: 26px;
       --ticker-gap: 4rem;
-      --left-pad: 24px;
-      --right-pad: 100px;
+      --left-pad: 0px;
+      --right-pad: 0px;
       --font-family: "Canva Sans", Arial, Helvetica, sans-serif;
       --weight: 700;
       --text-color: #ffffff;
@@ -37,7 +36,7 @@
       display: inline-block;
       white-space: nowrap;
       will-change: transform;
-      animation: scroll var(--ticker-speed) linear infinite;
+      animation: scroll linear infinite;
       padding-left: 100%;
     }
     .ticker .track span { padding-right: var(--ticker-gap); }
@@ -46,20 +45,25 @@
 </head>
 <body>
   <div class="ticker" aria-live="polite">
-    <div class="track" id="ticker-track">
-      <span id="ticker-text">Loading…</span>
+    <div class="track" id="track">
+      <span id="txt">Loading…</span>
     </div>
   </div>
   <script>
     async function loadTicker(){
       try{
-        const r = await fetch('ticker.txt?ts='+Date.now());
+        let r = await fetch('ticker.txt?ts=' + Date.now());
         if(r.ok){
           const t = (await r.text()).trim() || ' ';
-          const track = document.getElementById('ticker-track');
+          const track = document.getElementById('track');
           track.innerHTML = '<span>'+t+'</span><span>'+t+'</span>';
+          const chars = t.length;
+          const duration = Math.max(30, chars * 0.4); // seconds
+          track.style.animationDuration = duration + 's';
         }
-      }catch(e){}
+      }catch(e){
+        document.getElementById('txt').textContent = 'Could not load ticker.txt';
+      }
     }
     loadTicker();
     setInterval(loadTicker, 30000);
