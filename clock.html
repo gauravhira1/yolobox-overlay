@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clock Overlay (Perth ↔ New Delhi)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --clock-bottom: 24px;
+      --clock-right: 24px;
+      --clock-size: 22px;
+      --fade-ms: 600ms;
+      --font-family: "Canva Sans", Arial, Helvetica, sans-serif;
+      --weight: 700;
+      --text-color: #ffffff;
+      --shadow: 0 2px 6px rgba(0,0,0,0.45);
+    }
+    html, body { height: 100%; margin: 0; background: transparent; overflow: hidden; }
+    .clock {
+      position: fixed;
+      right: var(--clock-right);
+      bottom: var(--clock-bottom);
+      font-family: var(--font-family);
+      font-size: var(--clock-size);
+      font-weight: var(--weight);
+      color: var(--text-color);
+      text-shadow: var(--shadow);
+      white-space: nowrap;
+      line-height: 1;
+      pointer-events: none;
+      z-index: 2;
+      transition: opacity var(--fade-ms) ease;
+    }
+    .hidden { opacity: 0; }
+  </style>
+</head>
+<body>
+  <div class="clock" id="clockline">--:--</div>
+  <script>
+    let showPerth = true;
+    function fmtTime(tz, locale){
+      try {
+        return new Date().toLocaleTimeString(locale, { timeZone: tz, hour: 'numeric', minute: 'numeric', hour12: true });
+      } catch (e) {
+        return new Date().toLocaleTimeString([], { hour: 'numeric', minute: 'numeric', hour12: true });
+      }
+    }
+    function paintClock(fade){
+      const perth = fmtTime('Australia/Perth','en-AU');
+      const delhi = fmtTime('Asia/Kolkata','en-IN');
+      const el = document.getElementById('clockline');
+      const txt = showPerth ? ('Perth: ' + perth) : ('New Delhi: ' + delhi);
+      if (fade) {
+        el.classList.add('hidden');
+        setTimeout(() => { el.textContent = txt; el.classList.remove('hidden'); }, 80);
+      } else {
+        el.textContent = txt;
+      }
+    }
+    setInterval(() => { showPerth = !showPerth; paintClock(true); }, 3000);
+    paintClock(false);
+    setInterval(() => paintClock(false), 1000);
+  </script>
+</body>
+</html>
