@@ -49,7 +49,7 @@
       const perth = fmtTime('Australia/Perth','en-AU');
       const delhi = fmtTime('Asia/Kolkata','en-IN');
       const el = document.getElementById('clockline');
-      const txt = showPerth ? ('Perth: ' + perth) : ('New Delhi: ' + delhi);
+      const txt = showPerth ? ('Perth: ' + perth) : ('India: ' + delhi);
       if (fade) {
         el.classList.add('hidden');
         setTimeout(() => { el.textContent = txt; el.classList.remove('hidden'); }, 80);
