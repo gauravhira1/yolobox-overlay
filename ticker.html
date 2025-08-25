@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ticker Overlay (Scrolling Text)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --ticker-bottom: 72px;
+      --ticker-size: 22px;
+      --ticker-speed: 46.7s;
+      --ticker-gap: 4rem;
+      --left-pad: 24px;
+      --right-pad: 100px;
+      --font-family: "Canva Sans", Arial, Helvetica, sans-serif;
+      --weight: 700;
+      --text-color: #ffffff;
+      --shadow: 0 2px 6px rgba(0,0,0,0.45);
+    }
+    html, body { height: 100%; margin: 0; background: transparent; overflow: hidden; }
+    .ticker {
+      position: fixed;
+      left: var(--left-pad);
+      right: var(--right-pad);
+      bottom: var(--ticker-bottom);
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 2;
+      font-family: var(--font-family);
+      font-size: var(--ticker-size);
+      font-weight: var(--weight);
+      color: var(--text-color);
+      text-shadow: var(--shadow);
+      line-height: 1;
+    }
+    .ticker .track {
+      display: inline-block;
+      white-space: nowrap;
+      will-change: transform;
+      animation: scroll var(--ticker-speed) linear infinite;
+      padding-left: 100%;
+    }
+    .ticker .track span { padding-right: var(--ticker-gap); }
+    @keyframes scroll { from{ transform: translateX(0); } to{ transform: translateX(-100%); } }
+  </style>
+</head>
+<body>
+  <div class="ticker" aria-live="polite">
+    <div class="track" id="ticker-track">
+      <span id="ticker-text">Loading…</span>
+    </div>
+  </div>
+  <script>
+    async function loadTicker(){
+      try{
+        const r = await fetch('ticker.txt?ts='+Date.now());
+        if(r.ok){
+          const t = (await r.text()).trim() || ' ';
+          const track = document.getElementById('ticker-track');
+          track.innerHTML = '<span>'+t+'</span><span>'+t+'</span>';
+        }
+      }catch(e){}
+    }
+    loadTicker();
+    setInterval(loadTicker, 30000);
+  </script>
+</body>
+</html>
